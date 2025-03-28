@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register - CSCB20 Web Development</title>
+  <!-- Reference your main CSS file -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+  
+  <!-- Inline styles to center and enlarge the registration form -->
+  <style>
+    .content-wrapper {
+      max-width: 600px;  /* Adjust as needed */
+      margin: 3em auto;  /* Centers content horizontally */
+      text-align: center; /* Center text and form fields */
+    }
+    .content-wrapper h2 {
+      font-size: 2em;     /* Larger heading */
+      margin-bottom: 1em;
+    }
+    .content-wrapper form {
+      font-size: 1.1em;   /* Slightly larger text for form fields */
+    }
+    .content-wrapper form input[type="text"],
+    .content-wrapper form input[type="email"],
+    .content-wrapper form input[type="password"] {
+      width: 80%;         /* Wider input fields */
+      max-width: 400px;   /* Prevent fields from growing too large */
+      margin: 0.5em auto;
+      padding: 0.6em;
+      display: block;
+    }
+    .content-wrapper .account-type {
+      margin: 1em 0;
+    }
+    .content-wrapper button {
+      font-size: 1.1em;   /* Larger button text */
+      padding: 0.7em 1.2em;
+    }
+    /* Styles for flashed messages */
+    .flashes {
+      list-style: none;
+      padding: 0;
+      margin: 1em 0;
+      text-align: center;
+    }
+    .flashes li.error {
+      color: red;
+    }
+    .flashes li.success {
+      color: green;
+    }
+  </style>
+</head>
+<body>
+  <input type="checkbox" id="dark-mode-toggle" hidden>
+  
+  <div class="wrapper">
+    <!-- Header with only the site title -->
+    <header>
+      <h1>CSCB20 - Web Development</h1>
+    </header>
+    
+    <div class="content-wrapper">
+      <!-- Display flashed messages -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <ul class="flashes">
+            {% for category, message in messages %}
+              <li class="{{ category }}">{{ message }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      {% endwith %}
+      
+      <h2>Register</h2>
+      <!-- Registration Form -->
+      <form method="POST" action="{{ url_for('register') }}">
+        <input type="text" id="first_name" name="first_name" placeholder="Enter first name" required>
+        <input type="text" id="last_name" name="last_name" placeholder="Enter last name" required>
+        <input type="email" id="email" name="email" placeholder="Enter email" required>
+        <input type="text" id="username" name="username" placeholder="Enter username" required>
+        <input type="password" id="password" name="password" placeholder="Enter password" required>
+        <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm password" required>
+
+        <div class="account-type">
+          <label>
+            <input type="radio" name="user_type" value="Student" required> Student
+          </label>
+          <label>
+            <input type="radio" name="user_type" value="Instructor" required> Instructor
+          </label>
+        </div>
+        
+        <button type="submit">Register</button>
+      </form>
+
+      <p style="margin-top: 1.5em;">
+        Already have an account? <a href="{{ url_for('login') }}">Login</a>.
+      </p>
+    </div>
+    
+    <footer>
+      <p>Designed by <strong>Andy and Abdul</strong> | 
+         <a href="https://web.cs.toronto.edu/">Faculty of Computer Science</a>
+      </p>
+    </footer>
+  </div>
+  
+  <script src="{{ url_for('static', filename='js/Registaration.js') }}"></script>
+</body>
+</html>

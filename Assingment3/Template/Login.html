@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - CSCB20 Web Development</title>
+  <!-- Reference your main CSS file from the static folder -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+  
+  <!-- Inline styles for centering and enlarging the login form -->
+  <style>
+    .content-wrapper {
+      max-width: 600px;
+      margin: 3em auto;
+      text-align: center;
+    }
+    .content-wrapper h2 {
+      font-size: 2em;
+      margin-bottom: 1em;
+    }
+    .content-wrapper form {
+      font-size: 1.1em;
+    }
+    .content-wrapper form input[type="text"],
+    .content-wrapper form input[type="password"] {
+      width: 80%;
+      max-width: 400px;
+      margin: 0.5em auto;
+      padding: 0.6em;
+      display: block;
+    }
+    .content-wrapper .account-type {
+      margin: 1em 0;
+    }
+    .content-wrapper button {
+      font-size: 1.1em;
+      padding: 0.7em 1.2em;
+    }
+    /* Styles for flash messages */
+    .flashes {
+      list-style-type: none;
+      padding: 0;
+      margin: 1em 0;
+      text-align: center;
+    }
+    .flashes li.error {
+      color: red;
+    }
+    .flashes li.success {
+      color: green;
+    }
+  </style>
+</head>
+<body>
+  <input type="checkbox" id="dark-mode-toggle" hidden>
+  <div class="wrapper">
+    <!-- Header with only the site title -->
+    <header>
+      <h1>CSCB20 - Web Development</h1>
+    </header>
+    
+    <div class="content-wrapper">
+      <!-- Display flashed messages -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <ul class="flashes">
+            {% for category, message in messages %}
+              <li class="{{ category }}">{{ message }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      {% endwith %}
+      
+      <h2>Login</h2>
+      <!-- Login form using standard form submission -->
+      <form method="POST" action="{{ url_for('login') }}">
+        <input type="text" name="username" placeholder="Enter username" required>
+        <input type="password" name="password" placeholder="Enter password" required>
+        <div class="account-type">
+          <label>
+            <input type="radio" name="accountType" value="Student" required> Student
+          </label>
+          <label>
+            <input type="radio" name="accountType" value="Instructor" required> Instructor
+          </label>
+        </div>
+        <button type="submit" id="loginbutton">Log In</button>
+      </form>
+      <p style="margin-top: 1.5em;">
+        Don't have an account? <a href="{{ url_for('register') }}">Register</a>.
+      </p>
+    </div>
+    
+    <footer>
+      <p>Designed by <strong>Andy and Abdul</strong> | 
+         <a href="https://web.cs.toronto.edu/">Faculty of Computer Science</a>
+      </p>
+    </footer>
+  </div>
+</body>
+</html>
