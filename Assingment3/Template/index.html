@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSCB20 - Web Development</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+</head>
+<body>
+  <input type="checkbox" id="dark-mode-toggle" hidden>
+  
+  <div class="wrapper">
+    <header>
+      <h1>CSCB20 - Web Development</h1>
+      <nav>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="Dummy.pdf" target="_blank">Syllabus</a></li>
+          <li class="dropdown">
+            <a href="#">Assignments ▼</a>
+            <ul class="dropdown-content">
+              <li><a href="Assignment1.html">Assignment 1</a></li>
+              <li><a href="Assignment2.html">Assignment 2</a></li>
+              <li><a href="Assignment3.html">Assignment 3</a></li>
+            </ul>
+          </li>
+          <li><a href="Lab.html">Labs</a></li>
+          <li><a href="LectureNote.html">Lecture Notes</a></li>
+          <li><a href="https://piazza.com/" target="_blank">Piazza</a></li>
+          <li><a href="https://markus2.utsc.utoronto.ca/" target="_blank">MarkUs</a></li>
+          <li><a href="Feedback.html">Feedback</a></li>
+          <li><a href="CourseTeam.html">Course Team</a></li>
+          <li><label for="dark-mode-toggle" class="toggle-btn">Toggle Dark Mode</label></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main>
+      <section class="course-info">
+        <h2>Welcome to CSCB20</h2>
+        <p><strong>Course Description:</strong></p>
+        <p>
+          A practical introduction to databases and Web app development.
+          Learn database terminology, querying, and designing relational models.
+          Explore web application development and how they integrate with databases.
+        </p>
+        <h3>Prerequisite</h3>
+        <p>Some experience with Python, Java, or C.</p>
+        <h3>Exclusion</h3>
+        <p>This course may not be taken after - or concurrently with - any C- or D-level CSC course.</p>
+      </section>
+
+      <section class="instructor-info">
+        <h2>Instructor</h2>
+        <p><strong>Dr. Anna Bretscher</strong></p>
+        <p>Email: <a href="mailto:bretscher@utsc.utoronto.ca">bretscher@utsc.utoronto.ca</a></p>
+        <p>Office: IC493</p>
+        <p>Phone: (416) 208-4745</p>
+        <p><strong>Lectures:</strong> Mondays 9:15-11:00 in HW 216</p>
+        <p><strong>Office Hours:</strong> Wednesday 11:00-12:00</p>
+      </section>
+    </main>
+
+    <footer>
+        <p>Designed by <strong>Andy and Abdul</strong> | 
+           <a href="https://web.cs.toronto.edu/">Faculty of Computer Science</a>
+        </p>
+      </footer>
+  </div>
+</body>
+</html>
