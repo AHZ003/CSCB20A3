@@ -35,7 +35,21 @@
       </nav>
     </header>
 
-    <main>
+    <div class="welcome-message">
+      {% if session.username %}
+        {% if session.user_type == 'Instructor' %}
+          <!--message for instructor-->
+          <h3>Welcome instructor {{session.username}}, click here to see all the grades of your class.</h3>
+          <a href="{{ url_for('grade') }}">Manage Grades</a>
+        {% else %}
+          <!--message for student-->
+          <h3>Welcome {{session.username}}, click here to see your current grades.</h3>
+          <a href="{{ url_for('grade') }}">View Grades</a>
+        {% endif %}
+      {% endif %}
+    </div>
+
+    <main>      
       <section class="course-info">
         <h2>Welcome to CSCB20</h2>
         <p><strong>Course Description:</strong></p>
@@ -62,10 +76,10 @@
     </main>
 
     <footer>
-        <p>Designed by <strong>Andy and Abdul</strong> | 
+        <p>Designed by <strong>Andy, Abdul and Douglas</strong> | 
            <a href="https://web.cs.toronto.edu/">Faculty of Computer Science</a>
         </p>
-      </footer>
+    </footer>
   </div>
 </body>
 </html>

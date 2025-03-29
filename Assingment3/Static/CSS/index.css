@@ -145,6 +145,20 @@ nav ul li a:hover {
     display: block;
 }
 
+.welcome-message {
+    grid-column: span 2;
+    background: var(--course-bg);
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0px 5px 15px rgba(0,0,0,0.1);
+    display: block;
+    height: auto;
+    margin-bottom: 0;
+    width: 850px;
+    margin: auto;
+    margin-top:10px;
+}
+
 main {
     flex: 1;
     display: grid;
@@ -204,6 +218,9 @@ footer {
     padding: 15px;
     width: 100%;
     font-size: 0.9em;
+    position: fixed;
+    bottom: 0;
+
 }
 
 footer a {

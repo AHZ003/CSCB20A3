@@ -147,6 +147,16 @@ def feedback():
 def course_team():
     return render_template('CourseTeam.html')
 
+@app.route('/Grade')        #   newly-added identify user style and return different grade pages
+def grade():
+    user_type = session.get('user_type')
+    if user_type=='Instructor':
+        return render_template('Instructor_grade.html')
+    else:
+        return render_template('Student_grade.html')    #   for student grade page
+
+
+
 # Logout route: Clears the session data.
 @app.route('/logout')
 def logout():
@@ -157,4 +167,13 @@ def logout():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
+        
+        #  test account
+        user1 = User(first_name='Purva', last_name='Gawde', username='1234qwer', email='purva@example.com', password=bcrypt.generate_password_hash('password123').decode('utf-8'), user_type='Instructor')
+        user2 = User(first_name='student', last_name='A', username='4321qwer', email='student-a@example.com', password=bcrypt.generate_password_hash('password321').decode('utf-8'), user_type='Student')
+        if not User.query.first():
+            db.session.add_all([user1, user2])
+            db.session.commit()
+        
+        db.session.close()
     app.run(debug=True)
