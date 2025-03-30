@@ -34,26 +34,19 @@ class User(db.Model):
 class Grade(db.Model):
     __tablename__='Grade'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('User.id'), nullable=False)
-    work = db.Column(db.String(50), nullable = False)   #Assignments, Midterm exam, Final exam, Tutorial
+    userID = db.Column(db.Integer, db.ForeignKey('User.id'), nullable=False)
+    work = db.Column(db.String(50), nullable = False)   #   Assignments, Midterm exam, Final exam, Tutorial
     grade = db.Column(db.Integer, nullable = False)
 
-
-Grades = [
-    {
-        'id':1,
-        'user_id':1,
-        'work':'Assignment',
-        'grade':97
-    },
-    {
-        'id': 2,
-        'user_id':2,
-        'work':'Midterm exam',
-        'grade':86
-    },
-]
-
+#define the Regrade model
+class Regrade(db.Model):
+    __tablename__ = 'Remark'
+    id = db.Column(db.Integer, primary_key=True)
+    userID = db.Column(db.Integer, db.ForeignKey('User.id'), nullable=False)
+    work = db.Column(db.String(50), db.ForeignKey('Grade.work'), nullable = False) #  assignment name
+    question = db.Column(db.Integer)
+    reason = db.Column(db.String(1000), nullable = False)
+    status = db.Column(db.String(50), nullable=False)
 
 # Root route: Always start at the login page.
 @app.route('/')
@@ -176,13 +169,31 @@ def course_team():
 
 @app.route('/Grade')        #   newly-added identify user style and return different grade pages
 def grade():
+    query_grade_result=query_grades()
     user_type = session.get('user_type')
     if user_type=='Instructor':
-        return render_template('InstructorGrade.html')
+        return render_template('InstructorGrade.html', query_grade_result=query_grade_result)
     else:
-        return render_template('Student_grade.html')    #   for student grade page
+        return render_template('StudentGrade.html', query_grade_result=query_grade_result)    #   for student grade page
 
+@app.route('/Regrade')
+def regrade():
+    regrades_list=query_regrades()
+    return render_template('Regrade.html', regrades_list=regrades_list)
 
+@app.route('/update_regrade_status', methods=['POST'])
+def update_regrade_status():
+    regrade_id = request.form.get('regrade_id')
+    new_status = request.form.get('new_status')
+    regrade = Regrade.query.get(regrade_id)
+    if regrade:
+        regrade.status = new_status
+        db.session.commit()
+        flash(f"Regrade request {regrade_id} has been {new_status}.", 'success')
+    else:
+        flash("Regrade request not found.", 'error')
+
+    return redirect(url_for('regrade'))
 
 # Logout route: Clears the session data.
 @app.route('/logout')
@@ -191,6 +202,14 @@ def logout():
     flash('Logged out successfully.', 'success')
     return redirect(url_for('login'))
 
+def query_grades():
+    query_grades=Grade.query.all()
+    return query_grades
+
+def query_regrades():
+    query_regrades=Regrade.query.all()
+    return query_regrades
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
@@ -198,6 +217,7 @@ if __name__ == '__main__':
         #  test account
         user1 = User(first_name='Purva', last_name='Gawde', username='1234qwer', email='purva@example.com', password=bcrypt.generate_password_hash('password123').decode('utf-8'), user_type='Instructor')
         user2 = User(first_name='student', last_name='A', username='4321qwer', email='student-a@example.com', password=bcrypt.generate_password_hash('password321').decode('utf-8'), user_type='Student')
+        
         if not User.query.first():
             db.session.add_all([user1, user2])
             db.session.commit()

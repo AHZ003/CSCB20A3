@@ -35,6 +35,7 @@
       </nav>
     </header>
 
+    <div>
     <div class="welcome-message">
       {% if session.username %}
         {% if session.user_type == 'Instructor' %}
@@ -48,6 +49,15 @@
         {% endif %}
       {% endif %}
     </div>
+
+    {% if session.username %}
+      {% if session.user_type == 'Instructor' %}
+        <div class="regrade">
+          <a href="{{ url_for('regrade') }}">click here to view current regrade request</h3>
+        </div>
+      {% endif %}
+    {% endif %}
+  </div>
 
     <main>      
       <section class="course-info">

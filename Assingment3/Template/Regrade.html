@@ -35,26 +35,36 @@
     </header>
 
     <div class="content-wrapper">
-      <h1>  All students' grades</h1>
+      <h1>  All Remark Requests</h1>
       <table>
         <tr>
             <th>Student</th>
             <th>Work</th>
-            <th>Grade</th>
+            <th>Reason</th>
+            <th>Status</th>
         </tr>
-        {% for grade in query_grade_result %}
+        {% for regrade in regrades_list %}
         <tr>
-            <td>{{ grade.user.first_name }} {{ grade.user.last_name }}</td>
-            <td>{{ grade.work }}</td>
-            <td>{{ grade.grade }}</td>
+            <td>{{ regrade.user.first_name }} {{ regrade.user.last_name }}</td>
+            <td>{{ regrade.work }} Question{{ regrade.question }}</td>
+            <td>{{ regrade.reason }}</td>
+            <td>
+              {% if regrade.status == 'pending' %}
+              <form action="{{ url_for('update_regrade_status') }}" method="POST" style="display:inline;">
+                <input type="hidden" name="regrade_id" value="{{ regrade.id }}">
+                <input type="hidden" name="new_status" value="approved">
+                <button type="submit">Approve</button>
+              </form>
+              <form action="{{ url_for('update_regrade_status') }}" method="POST" style="display:inline;">
+                <input type="hidden" name="regrade_id" value="{{ regrade.id }}">
+                <input type="hidden" name="new_status" value="rejected">
+                <button type="submit">Reject</button>
+              </form>
+        {% else %}
+            {{ regrade.status }}
+        {% endif %}
+            </td>
         </tr>
         {% endfor %}
     </table>
     </div>
-  
-  
-  
-  
-  
-  
-  </div>
