@@ -206,6 +206,21 @@ def logout():
     flash('Logged out successfully.', 'success')
     return redirect(url_for('login'))
 
+@app.route('/addGrades', methods=['GET', 'POST'])
+def addGrades():
+    if request.method == 'POST':
+        student_id = request.form['student_id']
+        work = request.form['work']
+        grade = request.form['grade']
+        new_grade = Grade(userID=student_id, work=work, grade=grade)
+        db.session.add(new_grade)
+        db.session.commit()
+        flash('Marks updated successfully!', 'success')
+        return redirect(url_for('addGrades'))
+    else:
+        return render_template("AddGrades.html")
+    
+
 def query_grades():
     query_grades=Grade.query.all()
     return query_grades

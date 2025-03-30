@@ -35,25 +35,26 @@
     </header>
 
     <div class="content-wrapper">
-      <h1>  All students' grades</h1>
-      <table>
-        <tr>
-            <th>Student</th>
-            <th>Work</th>
-            <th>Grade</th>
-        </tr>
-        {% for grade in query_grade_result %}
-        <tr>
-            <td>{{ grade.user.first_name }} {{ grade.user.last_name }}</td>
-            <td>{{ grade.work }}</td>
-            <td>{{ grade.grade }}</td>
-        </tr>
-        {% endfor %}
-    </table>
+      <h1 class="title">Enter Student Grades</h1>
+      <div class="gradesForm">
+        <form action="{{ url_for('addGrades') }}" method="POST">
+          <label for="student_id">Student ID:</label>
+          <input type="text" id="student_id" name="student_id">
+  
+          <label for="work">Work:</label>
+          <input type="text" id="work" name="work">
+  
+          <label for="grade">Grade:</label>
+          <input type="number" id="grade" name="grade">
+  
+          <button type="submit">Submit</button>
+        </form>
+      </div>
     </div>
   </div>
 </body>
 
 <footer>
-     <a href="{{ url_for('addGrades') }}">Click here to add a new grade!</a>
+  <a href="{{ url_for('grade') }}">Return to grade viewing page</a>
 </footer>
+
