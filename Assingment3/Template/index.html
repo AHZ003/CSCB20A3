@@ -55,6 +55,10 @@
         <div class="regrade">
           <a href="{{ url_for('regrade') }}">click here to view current regrade request</h3>
         </div>
+      {% else %}
+      <div class="regrade">
+        <a href="{{ url_for('regrade') }}">click here to submit regrade request</h3>
+      </div>
       {% endif %}
     {% endif %}
   </div>

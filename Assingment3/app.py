@@ -179,7 +179,11 @@ def grade():
 @app.route('/Regrade')
 def regrade():
     regrades_list=query_regrades()
-    return render_template('Regrade.html', regrades_list=regrades_list)
+    user_type = session.get('user_type')
+    if user_type=='Instructor':
+        return render_template('InstructorRegrade.html', regrades_list=regrades_list)
+    else:
+        return render_template('StudentRegrade.html', regrades_list=regrades_list)
 
 @app.route('/update_regrade_status', methods=['POST'])
 def update_regrade_status():
