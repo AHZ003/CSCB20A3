@@ -12,27 +12,29 @@
   <div class="wrapper">
     <header>
       <h1>CSCB20 - Web Development</h1>
+      <!--adjusted-->
       <nav>
         <ul>
-          <li><a href="index.html">Home</a></li>
+          <li><a href="{{ url_for('home') }}">Home</a></li>
           <li><a href="Dummy.pdf" target="_blank">Syllabus</a></li>
           <li class="dropdown">
             <a href="#">Assignments ▼</a>
             <ul class="dropdown-content">
-              <li><a href="Assignment1.html">Assignment 1</a></li>
-              <li><a href="Assignment2.html">Assignment 2</a></li>
-              <li><a href="Assignment3.html">Assignment 3</a></li>
+              <li><a href="{{ url_for('assignment1') }}">Assignment 1</a></li>
+              <li><a href="{{ url_for('assignment2') }}">Assignment 2</a></li>
+              <li><a href="{{ url_for('assignment3') }}">Assignment 3</a></li>
             </ul>
           </li>
-          <li><a href="Lab.html">Labs</a></li>
-          <li><a href="LectureNote.html">Lecture Notes</a></li>
+          <li><a href="{{ url_for('lab') }}">Labs</a></li>
+          <li><a href="{{ url_for('lecture_note') }}">Lecture Notes</a></li>
           <li><a href="https://piazza.com/" target="_blank">Piazza</a></li>
           <li><a href="https://markus2.utsc.utoronto.ca/" target="_blank">MarkUs</a></li>
-          <li><a href="Feedback.html">Feedback</a></li>
-          <li><a href="CourseTeam.html">Course Team</a></li>
+          <li><a href="{{ url_for('feedback') }}">Feedback</a></li>
+          <li><a href="{{ url_for('course_team') }}">Course Team</a></li>
           <li><label for="dark-mode-toggle" class="toggle-btn">Toggle Dark Mode</label></li>
         </ul>
       </nav>
+      <!-- adjust end -->
     </header>
 
     <div>
