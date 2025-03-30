@@ -35,7 +35,21 @@
     </header>
 
     <div class="content-wrapper">
-      
+      <h1>All students' grades</h1>
+      <table class="table">
+        <tr>
+            <th>Student</th>
+            <th>Work</th>
+            <th>Grade</th>
+        </tr>
+        {% for grade in Grades %}
+        <tr>
+            <td>{{ grade.user.first_name }} {{ grade.user.last_name }}</td>
+            <td>{{ grade.work }}</td>
+            <td>{{ grade.grade }}</td>
+        </tr>
+        {% endfor %}
+    </table>
     </div>
   
   

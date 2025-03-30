@@ -20,6 +20,7 @@ bcrypt = Bcrypt(app)
 
 # Define the User model with a user_type field (Student or Instructor)
 class User(db.Model):
+    __tablename__='User'
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(50), nullable=False)
     last_name  = db.Column(db.String(50), nullable=False)
@@ -27,6 +28,32 @@ class User(db.Model):
     email      = db.Column(db.String(100), unique=True, nullable=False)
     password   = db.Column(db.String(200), nullable=False)
     user_type  = db.Column(db.String(20), nullable=False)  # 'Student' or 'Instructor'
+    grades=db.relationship('Grade', backref='user', lazy=True)
+
+#define the Grade model
+class Grade(db.Model):
+    __tablename__='Grade'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('User.id'), nullable=False)
+    work = db.Column(db.String(50), nullable = False)   #Assignments, Midterm exam, Final exam, Tutorial
+    grade = db.Column(db.Integer, nullable = False)
+
+
+Grades = [
+    {
+        'id':1,
+        'user_id':1,
+        'work':'Assignment',
+        'grade':97
+    },
+    {
+        'id': 2,
+        'user_id':2,
+        'work':'Midterm exam',
+        'grade':86
+    },
+]
+
 
 # Root route: Always start at the login page.
 @app.route('/')
@@ -151,7 +178,7 @@ def course_team():
 def grade():
     user_type = session.get('user_type')
     if user_type=='Instructor':
-        return render_template('Instructor_grade.html')
+        return render_template('InstructorGrade.html')
     else:
         return render_template('Student_grade.html')    #   for student grade page
 
@@ -167,7 +194,7 @@ def logout():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-        
+        print("Database tables created successfully.")
         #  test account
         user1 = User(first_name='Purva', last_name='Gawde', username='1234qwer', email='purva@example.com', password=bcrypt.generate_password_hash('password123').decode('utf-8'), user_type='Instructor')
         user2 = User(first_name='student', last_name='A', username='4321qwer', email='student-a@example.com', password=bcrypt.generate_password_hash('password321').decode('utf-8'), user_type='Student')

@@ -459,4 +459,28 @@ html, body {
   footer {
     margin-top: auto; /* Align footer to the end of .wrapper */
   }
+
+table, th, td{
+    text-align: center;
+    font-size:20px;
+    border: 1px solid;
+    padding: 10px;
+    color: black;
+}
+
+table{
+    width: 100%;
+    margin-bottom: 50px;
+    padding: 20px;
+    border-collapse: collapse;
+    background-color: whitesmoke;
+}
+
+th{
+    background-color: navy;
+    color: white;
+    font-size: 25px;
+    padding: 10px; 
+    border-color: black;
+}
   
