@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSCB20 - View Anonymous Feedback</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+  <style>
+    .content-wrapper {
+      max-width: 1100px;
+      margin: 20px auto;
+      padding: 20px;
+      text-align: left;
+      color: #333;
+    }
+    .feedback-item {
+      border: 1px solid #ccc;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+    }
+    .feedback-item p {
+      margin: 5px 0;
+    }
+    .feedback-status {
+      font-weight: bold;
+      color: #00509e;
+    }
+    .mark-reviewed button {
+      margin-top: 10px;
+      padding: 8px 12px;
+      background: #00509e;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .mark-reviewed button:hover {
+      background: #0073e6;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <header>
+      <h1>CSCB20 - Web Development</h1>
+      <nav>
+        <ul>
+          <li><a href="{{ url_for('home') }}">Home</a></li>
+          <!-- Add additional navigation links as needed -->
+          <li><a href="{{ url_for('feedback') }}">Feedback</a></li>
+          <li><label for="dark-mode-toggle" class="toggle-btn">Toggle Dark Mode</label></li>
+        </ul>
+      </nav>
+    </header>
+    <div class="content-wrapper">
+      <h2>Anonymous Feedback for You</h2>
+      {% if feedbacks %}
+        {% for feedback in feedbacks %}
+          <div class="feedback-item">
+            <p><strong>What they like about your teaching:</strong></p>
+            <p>{{ feedback.feedback_instructor_like }}</p>
+            <p><strong>Suggestions for improving your teaching:</strong></p>
+            <p>{{ feedback.feedback_instructor_improve }}</p>
+            <p><strong>What they like about the labs:</strong></p>
+            <p>{{ feedback.feedback_labs_like }}</p>
+            <p><strong>Suggestions for improving the labs:</strong></p>
+            <p>{{ feedback.feedback_labs_improve }}</p>
+            <p><strong>Submitted on:</strong> {{ feedback.timestamp.strftime('%Y-%m-%d %H:%M') }}</p>
+            <p><strong>Status:</strong> <span class="feedback-status">{{ feedback.status }}</span></p>
+            {% if feedback.status != 'reviewed' %}
+              <div class="mark-reviewed">
+                <form action="{{ url_for('mark_feedback_reviewed') }}" method="POST">
+                  <input type="hidden" name="feedback_id" value="{{ feedback.id }}">
+                  <button type="submit">Mark as Reviewed</button>
+                </form>
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      {% else %}
+        <p>No feedback available at this time.</p>
+      {% endif %}
+      <a href="{{ url_for('home') }}">Return to Home</a>
+    </div>
+    <footer>
+      <p>Designed by <strong>Andy and Abdul</strong> | 
+         <a href="https://web.cs.toronto.edu/">Faculty of Computer Science</a>
+      </p>
+    </footer>
+  </div>
+</body>
+</html>

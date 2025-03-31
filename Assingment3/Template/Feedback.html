@@ -3,9 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CSCB20 - Anonymous Feedback</title>
+  <title>CSCB20 - Feedback</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
-
   <style>
     .content-wrapper {
       max-width: 1100px;
@@ -27,6 +26,7 @@
       font-size: 1em;
       color: #333;
     }
+    /* --- Student Form Styles --- */
     .feedback-form {
       margin-top: 20px;
       text-align: left;
@@ -37,18 +37,24 @@
       font-weight: bold;
       color: #333;
     }
+    .feedback-form select,
     .feedback-form textarea {
       width: 100%;
-      max-width: 100%;
-      min-height: 120px;
-      font-family: "Segoe UI", sans-serif;
       padding: 10px;
       border-radius: 6px;
       border: 1px solid #ccc;
-      resize: vertical; 
+      margin-bottom: 15px;
+      font-family: "Segoe UI", sans-serif;
       transition: background-color 0.3s, color 0.3s, border 0.3s;
       color: #333;
       background-color: #fff;
+    }
+    .feedback-form select {
+      min-height: 40px;
+    }
+    .feedback-form textarea {
+      min-height: 120px;
+      resize: vertical; 
     }
     .feedback-form button {
       margin-top: 10px;
@@ -64,13 +70,42 @@
     .feedback-form button:hover {
       background: #0073e6;
     }
-    
-    
+    /* --- Instructor Feedback List Styles --- */
+    .feedback-list {
+      margin-top: 20px;
+      text-align: left;
+    }
+    .feedback-item {
+      border: 1px solid #ccc;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      text-align: left;
+    }
+    .feedback-item p {
+      margin: 5px 0;
+    }
+    .feedback-status {
+      font-weight: bold;
+      color: #00509e;
+    }
+    .mark-reviewed button {
+      margin-top: 10px;
+      padding: 8px 12px;
+      background: #00509e;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .mark-reviewed button:hover {
+      background: #0073e6;
+    }
   </style>
 </head>
-   <input type="checkbox" id="dark-mode-toggle" hidden>
-  
-   <div class="wrapper">
+<body>
+  <input type="checkbox" id="dark-mode-toggle" hidden>
+  <div class="wrapper">
     <header>
       <h1>CSCB20 - Web Development</h1>
       <nav>
@@ -95,18 +130,62 @@
         </ul>
       </nav>
     </header>
-
     <div class="content-wrapper">
-      <h2>Anonymous Feedback</h2>
-      <p>We value your honest thoughts on the course. Your feedback is completely anonymous and helps us improve.</p>
-      <form class="feedback-form" action="#" method="POST">
-        <label for="feedback">Your feedback:</label>
-        <textarea id="feedback" name="feedback" placeholder="Write your feedback here..."></textarea>
-        <button type="submit">Submit</button>
-      </form>
+      {% if user_type == 'Student' %}
+        <h2>Anonymous Feedback Submission</h2>
+        <p>We value your honest thoughts on the course. Your feedback is completely anonymous and helps us improve.</p>
+        <form class="feedback-form" action="{{ url_for('feedback') }}" method="POST">
+          <label for="instructor_id">Select Instructor:</label>
+          <select id="instructor_id" name="instructor_id" required>
+            {% for instructor in instructors %}
+              <option value="{{ instructor.id }}">{{ instructor.first_name }} {{ instructor.last_name }}</option>
+            {% endfor %}
+          </select>
+          <label for="instructor_like">What do you like about the instructor’s teaching?</label>
+          <textarea id="instructor_like" name="instructor_like" placeholder="Your feedback..." required></textarea>
+          <label for="instructor_improve">What do you recommend the instructor to do to improve their teaching?</label>
+          <textarea id="instructor_improve" name="instructor_improve" placeholder="Your suggestions..." required></textarea>
+          <label for="labs_like">What do you like about the labs?</label>
+          <textarea id="labs_like" name="labs_like" placeholder="Your feedback..." required></textarea>
+          <label for="labs_improve">What do you recommend the lab instructors to do to improve their lab teaching?</label>
+          <textarea id="labs_improve" name="labs_improve" placeholder="Your suggestions..." required></textarea>
+          <button type="submit">Submit Feedback</button>
+        </form>
+      {% elif user_type == 'Instructor' %}
+        <h2>View Anonymous Feedback</h2>
+        {% if feedbacks %}
+          <div class="feedback-list">
+            {% for feedback in feedbacks %}
+              <div class="feedback-item">
+                <p><strong>What they like about your teaching:</strong></p>
+                <p>{{ feedback.feedback_instructor_like }}</p>
+                <p><strong>Suggestions for improving your teaching:</strong></p>
+                <p>{{ feedback.feedback_instructor_improve }}</p>
+                <p><strong>What they like about the labs:</strong></p>
+                <p>{{ feedback.feedback_labs_like }}</p>
+                <p><strong>Suggestions for improving the labs:</strong></p>
+                <p>{{ feedback.feedback_labs_improve }}</p>
+                <p><strong>Submitted on:</strong> {{ feedback.timestamp.strftime('%Y-%m-%d %H:%M') }}</p>
+                <p><strong>Status:</strong> <span class="feedback-status">{{ feedback.status }}</span></p>
+                {% if feedback.status != 'reviewed' %}
+                  <div class="mark-reviewed">
+                    <form action="{{ url_for('mark_feedback_reviewed') }}" method="POST">
+                      <input type="hidden" name="feedback_id" value="{{ feedback.id }}">
+                      <button type="submit">Mark as Reviewed</button>
+                    </form>
+                  </div>
+                {% endif %}
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p>No feedback available at this time.</p>
+        {% endif %}
+      {% else %}
+        <p>Error: Unknown user type.</p>
+      {% endif %}
     </div>
   </div>
-  
   <footer>
     <p>Designed by <strong>Andy and Abdul</strong> | <a href="https://web.cs.toronto.edu/">Faculty of Computer Science</a></p>
   </footer>

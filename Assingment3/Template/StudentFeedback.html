@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSCB20 - Anonymous Feedback</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+  <style>
+    .content-wrapper {
+      max-width: 1100px;
+      margin: 20px auto;
+      padding: 0 20px;
+      text-align: center;
+      color: #333;
+    }
+    .content-wrapper h2 {
+      font-size: 1.6em;
+      margin-top: 20px;
+      margin-bottom: 10px;
+      color: #333;
+      border-bottom: 2px solid #e0e0e0;
+      padding-bottom: 5px;
+    }
+    .content-wrapper p {
+      margin-bottom: 15px;
+      font-size: 1em;
+      color: #333;
+    }
+    .feedback-form {
+      margin-top: 20px;
+      text-align: left;
+    }
+    .feedback-form label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #333;
+    }
+    .feedback-form select,
+    .feedback-form textarea {
+      width: 100%;
+      max-width: 100%;
+      font-family: "Segoe UI", sans-serif;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      transition: background-color 0.3s, color 0.3s, border 0.3s;
+      color: #333;
+      background-color: #fff;
+      margin-bottom: 15px;
+    }
+    /* For select, reduce the minimum height */
+    .feedback-form select {
+      min-height: 40px;
+    }
+    .feedback-form textarea {
+      min-height: 120px;
+      resize: vertical; 
+    }
+    .feedback-form button {
+      margin-top: 10px;
+      padding: 12px 20px;
+      background: #00509e;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 8px;
+      font-size: 1em;
+      transition: background 0.3s ease;
+    }
+    .feedback-form button:hover {
+      background: #0073e6;
+    }
+  </style>
+</head>
+<body>
+  <input type="checkbox" id="dark-mode-toggle" hidden>
+  <div class="wrapper">
+    <header>
+      <h1>CSCB20 - Web Development</h1>
+      <nav>
+        <ul>
+          <li><a href="{{ url_for('home') }}">Home</a></li>
+          <li><a href="Dummy.pdf" target="_blank">Syllabus</a></li>
+          <li class="dropdown">
+            <a href="#">Assignments ▼</a>
+            <ul class="dropdown-content">
+              <li><a href="{{ url_for('assignment1') }}">Assignment 1</a></li>
+              <li><a href="{{ url_for('assignment2') }}">Assignment 2</a></li>
+              <li><a href="{{ url_for('assignment3') }}">Assignment 3</a></li>
+            </ul>
+          </li>
+          <li><a href="{{ url_for('lab') }}">Labs</a></li>
+          <li><a href="{{ url_for('lecture_note') }}">Lecture Notes</a></li>
+          <li><a href="https://piazza.com/" target="_blank">Piazza</a></li>
+          <li><a href="https://markus2.utsc.utoronto.ca/" target="_blank">MarkUs</a></li>
+          <li><a href="{{ url_for('feedback') }}">Feedback</a></li>
+          <li><a href="{{ url_for('course_team') }}">Course Team</a></li>
+          <li><label for="dark-mode-toggle" class="toggle-btn">Toggle Dark Mode</label></li>
+        </ul>
+      </nav>
+    </header>
+    <div class="content-wrapper">
+      <h2>Anonymous Feedback</h2>
+      <p>We value your honest thoughts on the course. Your feedback is completely anonymous and helps us improve.</p>
+      <form class="feedback-form" action="{{ url_for('feedback') }}" method="POST">
+        <label for="instructor_id">Select Instructor:</label>
+        <select id="instructor_id" name="instructor_id" required>
+          {% for instructor in instructors %}
+            <option value="{{ instructor.id }}">{{ instructor.first_name }} {{ instructor.last_name }}</option>
+          {% endfor %}
+        </select>
+        <label for="instructor_like">What do you like about the instructor’s teaching?</label>
+        <textarea id="instructor_like" name="instructor_like" placeholder="Your feedback on what you like about the instructor's teaching..." required></textarea>
+        <label for="instructor_improve">What do you recommend the instructor to do to improve their teaching?</label>
+        <textarea id="instructor_improve" name="instructor_improve" placeholder="Your suggestions for improving the instructor's teaching..." required></textarea>
+        <label for="labs_like">What do you like about the labs?</label>
+        <textarea id="labs_like" name="labs_like" placeholder="Your feedback on what you like about the labs..." required></textarea>
+        <label for="labs_improve">What do you recommend the lab instructors to do to improve their lab teaching?</label>
+        <textarea id="labs_improve" name="labs_improve" placeholder="Your suggestions for improving lab teaching..." required></textarea>
+        <button type="submit">Submit Feedback</button>
+      </form>
+    </div>
+  </div>
+  <footer>
+    <p>Designed by <strong>Andy and Abdul</strong> | <a href="https://web.cs.toronto.edu/">Faculty of Computer Science</a></p>
+  </footer>
+</body>
+</html>
