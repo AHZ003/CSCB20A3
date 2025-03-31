@@ -43,6 +43,7 @@ class User(db.Model):
     password   = db.Column(db.String(200), nullable=False)
     user_type  = db.Column(db.String(20), nullable=False)  # 'Student' or 'Instructor'
     grades = db.relationship('Grade', backref='user', lazy=True)
+    regrade=db.relationship('Regrade', backref='user', lazy=True)
 
 # Additional models...
 class Grade(db.Model):
@@ -307,8 +308,22 @@ if __name__ == '__main__':
         user2 = User(first_name='student', last_name='A', username='4321qwer', 
                      email='student-a@example.com', password=bcrypt.generate_password_hash('password321').decode('utf-8'), 
                      user_type='Student')
+        grade1 = Grade(userID=2, work='Assignment', grade=97, user=user2)
+        grade2 = Grade(userID=2, work='Midterm Test', grade=82, user=user2)
+        grade3 = Grade(userID=2, work='Final Test', grade=95, user=user2)
+        regrade1 = Regrade(userID=2, work='Midterm Test', question=4, reason='blablabla', status='rejected', user=user2)
+        regrade2 = Regrade(userID=2, work='Midterm Test', question=6, reason='blablabla', status='pending', user=user2)
+        regrade3 = Regrade(userID=2, work='Assignment', question=2, reason='blablabla', status='approved', user=user2)
+
         if not User.query.first():
             db.session.add_all([user1, user2])
             db.session.commit()
+        if not Grade.query.first():
+            db.session.add_all([grade1, grade2, grade3])
+            db.session.commit()
+        if not Regrade.query.first():
+            db.session.add_all([regrade1, regrade2, regrade3])
+            db.session.commit()
+
         db.session.close()
     app.run(debug=True)
