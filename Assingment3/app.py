@@ -213,7 +213,7 @@ def feedback():
             db.session.commit()
             
             flash("Your feedback has been submitted successfully!", "success")
-            return render_template('FeedbackConfirmation.html')
+            return render_template('feedback_confirmation.html')
         else:
             instructors = User.query.filter_by(user_type='Instructor').all()
             return render_template('StudentFeedback.html', instructors=instructors)
