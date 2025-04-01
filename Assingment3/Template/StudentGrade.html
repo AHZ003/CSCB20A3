@@ -4,32 +4,27 @@
   <meta charset="UTF-8">
   <title>CSCB20 - Your Grades</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
-  
+
   <script>
-    // JavaScript function to toggle the remark input box visibility
     function toggleRemarkBox(gradeId) {
       var remarkBox = document.getElementById("remarkBox-" + gradeId);
       var submitButton = document.getElementById("submitRemark-" + gradeId);
       if (remarkBox.style.display === "none") {
-        remarkBox.style.display = "block";  // Show the textarea for the grade
-        submitButton.style.display = "block";  // Show the submit button
+        remarkBox.style.display = "block";
+        submitButton.style.display = "block";
       } else {
-        remarkBox.style.display = "none";  // Hide the textarea
-        submitButton.style.display = "none";  // Hide the submit button
+        remarkBox.style.display = "none";
+        submitButton.style.display = "none";
       }
     }
 
-    // JavaScript function to handle submitting the remark request
     function submitRemark(gradeId) {
-      var reason = document.getElementById("remarkReason-" + gradeId).value;
-
-      // Check if the reason is not empty
-      if (reason.trim() === "") {
+      var reason = document.getElementById("remarkReason-" + gradeId).value.trim();
+      if (reason === "") {
         alert("Please enter a reason for your remark request.");
         return;
       }
 
-      // Send the reason to the Flask server (you will need a POST route for this)
       fetch("/submit_remark/" + gradeId, {
         method: "POST",
         headers: {
@@ -37,23 +32,28 @@
         },
         body: JSON.stringify({ reason: reason })
       })
-      .then(response => response.json())
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
       .then(data => {
         if (data.success) {
           alert("Remark request submitted successfully.");
-          document.getElementById("remarkReason-" + gradeId).value = "";  // Clear the text area
-          toggleRemarkBox(gradeId);  // Hide the text box and button
-          document.getElementById("status-" + gradeId).innerText = "Status: Pending"; // Update status text
+          document.getElementById("remarkReason-" + gradeId).value = "";
+          toggleRemarkBox(gradeId);
+          document.getElementById("status-" + gradeId).innerText = "Status: Pending";
         } else {
-          alert("Failed to submit remark request. Please try again.");
+          alert("Failed to submit remark request: " + data.error);
         }
       })
       .catch(error => {
-        alert("Error: " + error);
+        console.error("Error submitting remark:", error);
+        alert("Server error. Please try again later.");
       });
     }
 
-    // JavaScript function to handle updating remark status (approve/reject)
     function updateRemarkStatus(gradeId, status) {
       fetch("/update_remark_status/" + gradeId, {
         method: "POST",
@@ -68,7 +68,7 @@
           alert("Remark request " + status + " successfully.");
           document.getElementById("status-" + gradeId).innerText = "Status: " + status.charAt(0).toUpperCase() + status.slice(1);
         } else {
-          alert("Failed to update the remark status. Please try again.");
+          alert("Failed to update the remark status: " + data.error);
         }
       })
       .catch(error => {
@@ -76,7 +76,6 @@
       });
     }
   </script>
-
 </head>
 <body>
   <input type="checkbox" id="dark-mode-toggle" hidden>
@@ -118,7 +117,7 @@
             <th>Grade</th>
             <th>Action</th>
           </tr>
-        </thead>
+        </thead>  
         <tbody>
           {% for grade in query_grade_result %}
             <tr>
@@ -126,19 +125,11 @@
               <td>{{ grade.grade }}</td>
               <td>
                 <button type="button" onclick="toggleRemarkBox('{{ grade.id }}')">Request Remark</button>
-
-                <!-- Hidden remark box for entering the reason -->
                 <div id="remarkBox-{{ grade.id }}" style="display: none;">
                   <textarea id="remarkReason-{{ grade.id }}" placeholder="Enter your reason for the remark..."></textarea>
                 </div>
-
-                <!-- Submit button for submitting the remark -->
                 <button id="submitRemark-{{ grade.id }}" style="display: none;" onclick="submitRemark('{{ grade.id }}')">Submit Remark Request</button>
-
-                <!-- Displaying the status of the remark request -->
                 <p id="status-{{ grade.id }}">Status: {{ grade.status if grade.status else "Not Requested" }}</p>
-
-                <!-- Buttons to approve or reject the request -->
                 {% if grade.status == "Pending" %}
                   <button type="button" onclick="updateRemarkStatus('{{ grade.id }}', 'approved')">Approve</button>
                   <button type="button" onclick="updateRemarkStatus('{{ grade.id }}', 'rejected')">Reject</button>
