@@ -7,7 +7,8 @@
 
   <script>
     function toggleRemarkBox(gradeId) {
-      var remarkBox = document.getElementById("remarkBox-" + gradeId);
+      var remarkBox = document.getElementById
+      ("remarkBox-" + gradeId);
       var submitButton = document.getElementById("submitRemark-" + gradeId);
       if (remarkBox.style.display === "none") {
         remarkBox.style.display = "block";
@@ -43,7 +44,7 @@
           alert("Remark request submitted successfully.");
           document.getElementById("remarkReason-" + gradeId).value = "";
           toggleRemarkBox(gradeId);
-          document.getElementById("status-" + gradeId).innerText = "Status: Pending";
+          document.getElementById("status-" + gradeId).innerText = "Status: pending";
         } else {
           alert("Failed to submit remark request: " + data.error);
         }
@@ -130,7 +131,7 @@
                 </div>
                 <button id="submitRemark-{{ grade.id }}" style="display: none;" onclick="submitRemark('{{ grade.id }}')">Submit Remark Request</button>
                 <p id="status-{{ grade.id }}">Status: {{ grade.status if grade.status else "Not Requested" }}</p>
-                {% if grade.status == "Pending" %}
+                {% if grade.status == "pending" %}
                   <button type="button" onclick="updateRemarkStatus('{{ grade.id }}', 'approved')">Approve</button>
                   <button type="button" onclick="updateRemarkStatus('{{ grade.id }}', 'rejected')">Reject</button>
                 {% endif %}

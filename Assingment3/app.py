@@ -83,10 +83,11 @@ def index():
 # Home route.
 @app.route('/home')
 def home():
+    name = session.get('name')
     if 'username' not in session:
         flash('Please login first.', 'error')
         return redirect(url_for('login'))
-    return render_template('index.html')
+    return render_template('index.html',name=name)
 
 # Registration route.
 @app.route('/Register', methods=['GET', 'POST'])
@@ -171,6 +172,7 @@ def login():
         if user and user.user_type == form_user_type and bcrypt.check_password_hash(user.password, password):
             session['username'] = user.username
             session['user_type'] = user.user_type
+            session['name'] = user.first_name
             session.permanent = True
             flash('Login successful!', 'success')
             return redirect(url_for('home'))
@@ -325,12 +327,13 @@ def course_team():
 
 @app.route('/Grade')
 def grade():
-    query_grade_result = query_grades()
+    name = session.get('name')
     user_type = session.get('user_type')
+
     if user_type == 'Instructor':
-        return render_template('InstructorGrade.html', query_grade_result=query_grade_result)
+        return render_template('InstructorGrade.html', name=name)
     else:
-        return render_template('StudentGrade.html', query_grade_result=query_grade_result)
+        return render_template('StudentGrade.html', name=name)
 
 @app.route('/Regrade')
 def regrade():
