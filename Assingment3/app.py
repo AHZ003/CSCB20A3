@@ -65,7 +65,6 @@ class Regrade(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     userID = db.Column(db.Integer, db.ForeignKey('User.id'), nullable=False)
     work = db.Column(db.String(50), db.ForeignKey('Grade.work'), nullable=False)
-    question = db.Column(db.Integer)
     reason = db.Column(db.String(1000), nullable=False)
     status = db.Column(db.String(50), nullable=False)
 
@@ -284,7 +283,7 @@ def submit_remark(grade_id):
         return jsonify({"success": False, "error": "Remark request already exists"}), 400
 
     # Create a new regrade request.
-    new_regrade = Regrade(userID=user.id, work=grade.work, question=None, reason=reason, status="pending")
+    new_regrade = Regrade(userID=user.id, work=grade.work, reason=reason, status="pending")
     db.session.add(new_regrade)
     db.session.commit()
     return jsonify({"success": True, "message": "Remark request submitted successfully"})
@@ -390,18 +389,24 @@ if __name__ == '__main__':
         user1 = User(first_name='Purva', last_name='Gawde', username='1234qwer', 
                      email='purva@example.com', password=bcrypt.generate_password_hash('password123').decode('utf-8'), 
                      user_type='Instructor')
-        user2 = User(first_name='student', last_name='A', username='4321qwer', 
+        user2 = User(first_name='James', last_name='Anderson', username='4321qwer', 
                      email='student-a@example.com', password=bcrypt.generate_password_hash('password321').decode('utf-8'), 
+                     user_type='Student')
+        user3 = User(first_name='Emily', last_name='Johnson', username='1234rewq', 
+                     email='emily@example.com', password=bcrypt.generate_password_hash('password111').decode('utf-8'), 
+                     user_type='Instructor')
+        user4 = User(first_name='Benjamin', last_name='Smith', username='4321rewq', 
+                     email='student-b@example.com', password=bcrypt.generate_password_hash('password222').decode('utf-8'), 
                      user_type='Student')
         grade1 = Grade(userID=2, work='Assignment', grade=97, user=user2)
         grade2 = Grade(userID=2, work='Midterm Test', grade=82, user=user2)
         grade3 = Grade(userID=2, work='Final Test', grade=95, user=user2)
-        regrade1 = Regrade(userID=2, work='Midterm Test', question=4, reason='blablabla', status='rejected', user=user2)
-        regrade2 = Regrade(userID=2, work='Midterm Test', question=6, reason='blablabla', status='pending', user=user2)
-        regrade3 = Regrade(userID=2, work='Assignment', question=2, reason='blablabla', status='approved', user=user2)
+        regrade1 = Regrade(userID=2, work='Midterm Test', reason='blablabla', status='rejected', user=user2)
+        regrade2 = Regrade(userID=2, work='Midterm Test', reason='blablabla', status='pending', user=user2)
+        regrade3 = Regrade(userID=2, work='Assignment', reason='blablabla', status='approved', user=user2)
 
         if not User.query.first():
-            db.session.add_all([user1, user2])
+            db.session.add_all([user1, user2, user3, user4])
             db.session.commit()
         if not Grade.query.first():
             db.session.add_all([grade1, grade2, grade3])

@@ -46,7 +46,7 @@
         {% for regrade in regrades_list %}
         <tr>
             <td>{{ regrade.user.first_name }} {{ regrade.user.last_name }}</td>
-            <td>{{ regrade.work }} Question{{ regrade.question }}</td>
+            <td>{{ regrade.work }}</td>
             <td>{{ regrade.reason }}</td>
             <td>
               {% if regrade.status == 'pending' %}
