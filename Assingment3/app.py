@@ -1,6 +1,7 @@
 import os
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy 
+from flask_login import login_required, current_user
 from flask_bcrypt import Bcrypt
 from datetime import timedelta, datetime
 from sqlalchemy import or_
@@ -82,10 +83,11 @@ def index():
 # Home route.
 @app.route('/home')
 def home():
+    name = session.get('name')
     if 'username' not in session:
         flash('Please login first.', 'error')
         return redirect(url_for('login'))
-    return render_template('index.html')
+    return render_template('index.html',name=name)
 
 # Registration route.
 @app.route('/Register', methods=['GET', 'POST'])
@@ -127,6 +129,36 @@ def register():
         flash('Registration successful! Please login.', 'success')
         return redirect(url_for('login'))
     return render_template('Register.html')
+@app.route('/grades', methods=['GET'])
+def view_grades():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
+    user = User.query.filter_by(username=session['username']).first()
+    if not user:
+        return "User not found", 404
+
+    if user.user_type == 'Student':
+        # Only fetch the grades of the logged-in student
+        grades = Grade.query.filter_by(userID=user.id).all()
+        return render_template('grades_student.html', grades=grades)
+    elif user.user_type == 'Instructor':
+        # Instructors can see all students' grades
+        grades = Grade.query.all()
+        return render_template('grades_instructor.html', grades=grades)
+    else:
+        return "Unauthorized", 403
+
+@app.route('/student_grades')
+@login_required  # Ensures only logged-in users access this page
+def student_grades():
+    if current_user.role != 'student':  # Ensure only students access this page
+        return redirect(url_for('some_other_page'))
+
+    student_id = current_user.id  # Get the current logged-in student’s ID
+    student_grades = Grade.query.filter_by(student_id=student_id).all()  # Fetch only this student’s grades
+
+    return render_template('StudentGrade.html', query_grade_result=student_grades)
 
 # Login route.
 @app.route('/Login', methods=['GET', 'POST'])
@@ -140,6 +172,7 @@ def login():
         if user and user.user_type == form_user_type and bcrypt.check_password_hash(user.password, password):
             session['username'] = user.username
             session['user_type'] = user.user_type
+            session['name'] = user.first_name
             session.permanent = True
             flash('Login successful!', 'success')
             return redirect(url_for('home'))
@@ -221,6 +254,52 @@ def feedback():
     else:
         flash("Unauthorized access.", "error")
         return redirect(url_for('home'))
+    
+@app.route('/submit_remark/<int:grade_id>', methods=['POST'])
+def submit_remark(grade_id):
+    if 'username' not in session:
+        return jsonify({"success": False, "error": "Unauthorized"}), 403  # 403 Forbidden
+
+    data = request.get_json()
+    reason = data.get('reason', '').strip()
+
+    if not reason:
+        return jsonify({"success": False, "error": "Reason is required"}), 400  # 400 Bad Request
+
+    user = User.query.filter_by(username=session['username']).first()
+    if not user:
+        return jsonify({"success": False, "error": "User not found"}), 404
+
+    grade = Grade.query.get(grade_id)
+    if not grade:
+        return jsonify({"success": False, "error": "Grade not found"}), 404
+
+    # Ensure the user is the student who owns this grade
+    if grade.userID != user.id:
+        return jsonify({"success": False, "error": "You cannot request a remark for another student's grade"}), 403
+
+    # Create a new regrade request
+    new_regrade = Regrade(userID=user.id, work=grade.work, question=None, reason=reason, status="Pending")
+    db.session.add(new_regrade)
+    db.session.commit()
+
+    return jsonify({"success": True, "message": "Remark request submitted successfully"})
+@app.route('/update_remark_status/<int:regrade_id>', methods=['POST'])
+def update_remark_status(regrade_id):
+    if 'username' not in session or session.get('user_type') != 'Instructor':
+        return jsonify({"success": False, "message": "Unauthorized"}), 403
+
+    data = request.get_json()
+    status = data.get('status', '').lower()
+    if status not in ['approved', 'rejected']:
+        return jsonify({"success": False, "message": "Invalid status"}), 400
+
+    regrade = Regrade.query.get(regrade_id)
+    if regrade:
+        regrade.status = status
+        db.session.commit()
+        return jsonify({"success": True, "message": f"Regrade {status}"}), 200
+    return jsonify({"success": False, "message": "Regrade not found"}), 404
 
 # Route for instructors to mark feedback as reviewed.
 @app.route('/mark_feedback_reviewed', methods=['POST'])
@@ -248,12 +327,13 @@ def course_team():
 
 @app.route('/Grade')
 def grade():
-    query_grade_result = query_grades()
+    name = session.get('name')
     user_type = session.get('user_type')
+
     if user_type == 'Instructor':
-        return render_template('InstructorGrade.html', query_grade_result=query_grade_result)
+        return render_template('InstructorGrade.html', name=name)
     else:
-        return render_template('StudentGrade.html', query_grade_result=query_grade_result)
+        return render_template('StudentGrade.html', name=name)
 
 @app.route('/Regrade')
 def regrade():

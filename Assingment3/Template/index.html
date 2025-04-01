@@ -39,14 +39,14 @@
 
     <div>
     <div class="welcome-message">
-      {% if session.username %}
+      {% if name %}
         {% if session.user_type == 'Instructor' %}
           <!--message for instructor-->
-          <h3>Welcome instructor {{session.username}}, click here to see all the grades of your class.</h3>
+          <h3>Welcome instructor {{name}}, click here to see all the grades of your class.</h3>
           <a href="{{ url_for('grade') }}">Manage Grades</a>
         {% else %}
           <!--message for student-->
-          <h3>Welcome {{session.username}}, click here to see your current grades.</h3>
+          <h3>Welcome {{name}}, click here to see your current grades.</h3>
           <a href="{{ url_for('grade') }}">View Grades</a>
         {% endif %}
       {% endif %}
@@ -57,10 +57,6 @@
         <div class="regrade">
           <a href="{{ url_for('regrade') }}">click here to view current regrade request</h3>
         </div>
-      {% else %}
-      <div class="regrade">
-        <a href="{{ url_for('regrade') }}">click here to submit regrade request</h3>
-      </div>
       {% endif %}
     {% endif %}
   </div>
