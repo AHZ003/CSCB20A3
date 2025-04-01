@@ -42,14 +42,14 @@
 <<<<<<< Updated upstream
     <div>
     <div class="welcome-message">
-      {% if session.username %}
+      {% if first_name %}
         {% if session.user_type == 'Instructor' %}
           <!--message for instructor-->
-          <h3>Welcome instructor {{session.username}}, click here to see all the grades of your class.</h3>
+          <h3>Welcome instructor {{first_name}}, click here to see all the grades of your class.</h3>
           <a href="{{ url_for('grade') }}">Manage Grades</a>
         {% else %}
           <!--message for student-->
-          <h3>Welcome {{session.username}}, click here to see your current grades.</h3>
+          <h3>Welcome {{first_name}}, click here to see your current grades.</h3>
           <a href="{{ url_for('grade') }}">View Grades</a>
         {% endif %}
       {% endif %}

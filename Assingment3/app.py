@@ -39,7 +39,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(app.instance
 =======
     template_folder='Template',
     static_folder='Static'
-)
+
 
 =======
 from flask import Flask, render_template, request, redirect, url_for, session, flash
