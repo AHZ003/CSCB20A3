@@ -327,13 +327,13 @@ def course_team():
 
 @app.route('/Grade')
 def grade():
-    name = session.get('name')
+    query_grade_result = query_grades()
     user_type = session.get('user_type')
 
     if user_type == 'Instructor':
-        return render_template('InstructorGrade.html', name=name)
+        return render_template('InstructorGrade.html', query_grade_result=query_grade_result)
     else:
-        return render_template('StudentGrade.html', name=name)
+        return render_template('StudentGrade.html', query_grade_result=query_grade_result)
 
 @app.route('/Regrade')
 def regrade():
