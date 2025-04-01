@@ -1,70 +1,41 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>CSCB20 - Grades</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
-</head>
-<body>
-  <input type="checkbox" id="dark-mode-toggle" hidden>
-  
-  <div class="wrapper">
-    <header>
-      <h1>CSCB20 - Web Development</h1>
-      <nav>
-        <ul>
-          <li><a href="{{ url_for('home') }}">Home</a></li>
-          <li><a href="Dummy.pdf" target="_blank">Syllabus</a></li>
-          <li class="dropdown">
-            <a href="#">Assignments ▼</a>
-            <ul class="dropdown-content">
-              <li><a href="{{ url_for('assignment1') }}">Assignment 1</a></li>
-              <li><a href="{{ url_for('assignment2') }}">Assignment 2</a></li>
-              <li><a href="{{ url_for('assignment3') }}">Assignment 3</a></li>
-            </ul>
-          </li>
-          <li><a href="{{ url_for('lab') }}">Labs</a></li>
-          <li><a href="{{ url_for('lecture_note') }}">Lecture Notes</a></li>
-          <li><a href="https://piazza.com/" target="_blank">Piazza</a></li>
-          <li><a href="https://markus2.utsc.utoronto.ca/" target="_blank">MarkUs</a></li>
-          <li><a href="{{ url_for('feedback') }}">Feedback</a></li>
-          <li><a href="{{ url_for('course_team') }}">Course Team</a></li>
-          <li><label for="dark-mode-toggle" class="toggle-btn">Toggle Dark Mode</label></li>
-        </ul>
-      </nav>
-    </header>
+<h1>Regrades for Review</h1>
 
-    <div class="content-wrapper">
-      <h1>  All Remark Requests</h1>
-      <table>
-        <tr>
-            <th>Student</th>
-            <th>Work</th>
-            <th>Reason</th>
-            <th>Status</th>
-        </tr>
-        {% for regrade in regrades_list %}
-        <tr>
-            <td>{{ regrade.user.first_name }} {{ regrade.user.last_name }}</td>
-            <td>{{ regrade.work }} Question{{ regrade.question }}</td>
-            <td>{{ regrade.reason }}</td>
-            <td>
-              {% if regrade.status == 'pending' %}
-              <form action="{{ url_for('update_regrade_status') }}" method="POST" style="display:inline;">
-                <input type="hidden" name="regrade_id" value="{{ regrade.id }}">
-                <input type="hidden" name="new_status" value="approved">
-                <button type="submit">Approve</button>
-              </form>
-              <form action="{{ url_for('update_regrade_status') }}" method="POST" style="display:inline;">
-                <input type="hidden" name="regrade_id" value="{{ regrade.id }}">
-                <input type="hidden" name="new_status" value="rejected">
-                <button type="submit">Reject</button>
-              </form>
-        {% else %}
-            {{ regrade.status }}
-        {% endif %}
-            </td>
-        </tr>
-        {% endfor %}
+{% if regrades_list %}
+    <p>Found {{ regrades_list|length }} regrades.</p> <!-- Debugging line to show the count -->
+    <table>
+        <thead>
+            <tr>
+                <th>Student ID</th>
+                <th>Assignment</th>
+                <th>Question</th>
+                <th>Reason</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for regrade in regrades_list %}
+                <tr>
+                    <td>{{ regrade.userID }}</td>
+                    <td>{{ regrade.work }}</td>
+                    <td>{{ regrade.question }}</td>
+                    <td>{{ regrade.reason }}</td>
+                    <td>{{ regrade.status }}</td>
+                    <td>
+                        <form action="{{ url_for('update_regrade_status') }}" method="POST">
+                            <input type="hidden" name="regrade_id" value="{{ regrade.id }}">
+                            <select name="new_status">
+                                <option value="approved" {% if regrade.status == 'approved' %}selected{% endif %}>Approved</option>
+                                <option value="rejected" {% if regrade.status == 'rejected' %}selected{% endif %}>Rejected</option>
+                                <option value="pending" {% if regrade.status == 'pending' %}selected{% endif %}>Pending</option>
+                            </select>
+                            <button type="submit">Update Status</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
     </table>
-    </div>
+{% else %}
+    <p>No regrades available at the moment.</p>
+{% endif %}
