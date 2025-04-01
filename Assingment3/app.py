@@ -1,9 +1,16 @@
+<<<<<<< Updated upstream
 import os
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy 
 from flask_bcrypt import Bcrypt
 from datetime import timedelta, datetime
 from sqlalchemy import or_
+=======
+from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask_sqlalchemy import SQLAlchemy
+from flask_bcrypt import Bcrypt
+from datetime import timedelta
+>>>>>>> Stashed changes
 
 # Determine the absolute path of the current directory
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -17,6 +24,7 @@ if not os.path.exists(INSTANCE_PATH):
 
 app = Flask(
     __name__,
+<<<<<<< Updated upstream
     template_folder='Template',  # Points to your "Template" folder
     static_folder='Static',       # Points to your "Static" folder
     instance_path=INSTANCE_PATH,  # Set the instance folder path
@@ -26,13 +34,21 @@ app = Flask(
 # Configure the database URI using an absolute path.
 app.config['SECRET_KEY'] = 'YOUR_SECRET_KEY'  # Change this to a secure secret key
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(app.instance_path, 'assignment3.db')
+=======
+    template_folder='Template',
+    static_folder='Static'
+)
+
+app.config['SECRET_KEY'] = 'YOUR_SECRET_KEY'  
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///assignment3.db'
+>>>>>>> Stashed changes
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
 
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 
-# Define the User model with a user_type field (Student or Instructor)
+# Define User model
 class User(db.Model):
     __tablename__ = 'User'
     id = db.Column(db.Integer, primary_key=True)
@@ -45,6 +61,7 @@ class User(db.Model):
     grades = db.relationship('Grade', backref='user', lazy=True)
     regrade=db.relationship('Regrade', backref='user', lazy=True)
 
+<<<<<<< Updated upstream
 # Additional models...
 class Grade(db.Model):
     __tablename__ = 'Grade'
@@ -75,18 +92,50 @@ class Feedback(db.Model):
     status = db.Column(db.String(50), default="open")  # "open" or "reviewed"
 
 # Root route.
+=======
+# Define Marks model
+class Marks(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    assignment1 = db.Column(db.Float, nullable=True)
+    assignment2 = db.Column(db.Float, nullable=True)
+    assignment3 = db.Column(db.Float, nullable=True)
+    midterm = db.Column(db.Float, nullable=True)
+    lab_tutorials = db.Column(db.Float, nullable=True)
+    final_exam = db.Column(db.Float, nullable=True)
+
+    user = db.relationship('User', backref=db.backref('marks', lazy=True))
+
+# Define Remark Request model
+class RemarkRequest(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    assignment = db.Column(db.String(50), nullable=False)
+    reason = db.Column(db.Text, nullable=False)
+    status = db.Column(db.String(20), default="Pending")
+    timestamp = db.Column(db.DateTime, default=db.func.current_timestamp())
+
+    user = db.relationship('User', backref=db.backref('remark_requests', lazy=True))
+
+>>>>>>> Stashed changes
 @app.route('/')
 def index():
+    if 'username' in session:
+        return render_template('index.html', first_name=session.get('first_name', 'Guest'))
     return redirect(url_for('login'))
 
+<<<<<<< Updated upstream
 # Home route.
+=======
+>>>>>>> Stashed changes
 @app.route('/home')
 def home():
     if 'username' not in session:
         flash('Please login first.', 'error')
         return redirect(url_for('login'))
-    return render_template('index.html')
+    return render_template('index.html', first_name=session.get('first_name', 'Guest'))
 
+<<<<<<< Updated upstream
 # Registration route.
 @app.route('/Register', methods=['GET', 'POST'])
 def register():
@@ -130,16 +179,25 @@ def register():
 
 # Login route.
 @app.route('/Login', methods=['GET', 'POST'])
+=======
+@app.route('/login', methods=['GET', 'POST'])
+>>>>>>> Stashed changes
 def login():
     if request.method == 'POST':
         username = request.form.get('username').strip()
         password = request.form.get('password')
+<<<<<<< Updated upstream
         form_user_type = request.form.get('accountType')  # "Student" or "Instructor"
+=======
+        form_user_type = request.form.get('accountType')
+>>>>>>> Stashed changes
 
         user = User.query.filter_by(username=username).first()
+
         if user and user.user_type == form_user_type and bcrypt.check_password_hash(user.password, password):
             session['username'] = user.username
             session['user_type'] = user.user_type
+            session['first_name'] = user.first_name
             session.permanent = True
             flash('Login successful!', 'success')
             return redirect(url_for('home'))
@@ -148,6 +206,7 @@ def login():
             return render_template('Login.html')
     return render_template('Login.html')
 
+<<<<<<< Updated upstream
 # Dashboard route.
 @app.route('/dashboard')
 def dashboard():
@@ -296,6 +355,82 @@ def query_grades():
 
 def query_regrades():
     return Regrade.query.all()
+=======
+@app.route('/logout')
+def logout():
+    session.clear()
+    flash('Logged out successfully.', 'success')
+    return redirect(url_for('login'))
+>>>>>>> Stashed changes
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        first_name = request.form.get('first_name')
+        last_name = request.form.get('last_name')
+        username = request.form.get('username')
+        email = request.form.get('email')
+        password = bcrypt.generate_password_hash(request.form.get('password')).decode('utf-8')
+        user_type = request.form.get('user_type')
+
+        if User.query.filter_by(username=username).first():
+            flash('Username already exists.', 'error')
+            return redirect(url_for('register'))
+        if User.query.filter_by(email=email).first():
+            flash('Email already exists.', 'error')
+            return redirect(url_for('register'))
+
+        new_user = User(first_name=first_name, last_name=last_name, username=username, email=email, password=password, user_type=user_type)
+        db.session.add(new_user)
+        db.session.commit()
+
+        flash('Registration successful! You can now log in.', 'success')
+        return redirect(url_for('login'))
+
+    return render_template('Register.html')
+
+@app.route('/marks')
+def view_marks():
+    if 'username' not in session:
+        flash('Please log in to view your marks.', 'error')
+        return redirect(url_for('login'))
+
+    user = User.query.filter_by(username=session['username']).first()
+    marks = Marks.query.filter_by(user_id=user.id).first()
+    remark_requests = {req.assignment: req for req in RemarkRequest.query.filter_by(user_id=user.id).all()}
+
+    return render_template('marks.html', user=user, marks=marks, remark_requests=remark_requests)
+
+@app.route('/remark_request', methods=['POST'])
+def remark_request():
+    if 'username' not in session:
+        flash('Please log in first.', 'error')
+        return redirect(url_for('login'))
+
+    user = User.query.filter_by(username=session['username']).first()
+    if not user:
+        flash('User not found.', 'error')
+        return redirect(url_for('login'))
+
+    assignment = request.form.get('assignment')
+    reason = request.form.get('reason').strip()
+
+    if not reason:
+        flash('Please provide a reason for the remark request.', 'error')
+        return redirect(url_for('view_marks'))
+
+    existing_request = RemarkRequest.query.filter_by(user_id=user.id, assignment=assignment).first()
+    if existing_request:
+        flash(f'Remark request for {assignment.replace("_", " ").title()} already submitted!', 'error')
+        return redirect(url_for('view_marks'))
+
+    new_request = RemarkRequest(user_id=user.id, assignment=assignment, reason=reason, status="Pending")
+    db.session.add(new_request)
+    db.session.commit()
+
+    flash(f'Remark request for {assignment.replace("_", " ").title()} submitted successfully!', 'success')
+    
+    return redirect(url_for('view_marks'))
 
 if __name__ == '__main__':
     with app.app_context():

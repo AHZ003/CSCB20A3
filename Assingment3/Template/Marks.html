@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>View Marks</title>
+    <style>
+        .hidden { display: none; }
+    </style>
+    <script>
+        function showRemarkForm(assignment) {
+            document.getElementById('remark-form-' + assignment).style.display = 'block';
+        }
+    </script>
+</head>
+<body>
+    <h2>Student Marks</h2>
+    <table border="1">
+        <tr>
+            <th>Assignment</th>
+            <th>Mark</th>
+            <th>Request Remark</th>
+            <th>Remark Status</th>
+        </tr>
+        {% for assignment, mark in [
+            ('assignment1', marks.assignment1),
+            ('assignment2', marks.assignment2),
+            ('assignment3', marks.assignment3),
+            ('midterm', marks.midterm),
+            ('lab_tutorials', marks.lab_tutorials),
+            ('final_exam', marks.final_exam)
+        ] %}
+        <tr>
+            <td>{{ assignment.replace("_", " ").title() }}</td>
+            <td>{{ mark if mark is not none else "N/A" }}</td>
+            <td>
+                <button onclick="showRemarkForm('{{ assignment }}')" {% if mark is none %}disabled{% endif %}>
+                    Submit Remark Request
+                </button>
+
+                <form id="remark-form-{{ assignment }}" method="POST" action="{{ url_for('remark_request') }}" class="hidden">
+                    <input type="hidden" name="assignment" value="{{ assignment }}">
+                    <textarea name="reason" placeholder="Enter your reason" required></textarea>
+                    <button type="submit">Submit</button>
+                </form>
+            </td>
+            <td>
+                {% set remark = remark_requests.get(assignment) %}
+                {% if remark %}
+                    {{ remark.status }}
+                {% else %}
+                    No Request
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
